@@ -98,10 +98,11 @@ int pinstate2 = 1;
 ////////////////////	Function prototypes		////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
-#ifdef DEBUG_UART_OUT
+
  // Outputs the char to the UART port
+ // Used for debugging and USB programming
 void putch(char);
-#endif
+
 
 // Passes back a char from the UART port
 // Returns -1 on parity, frame error or timeout else returns 1
@@ -150,6 +151,9 @@ uint8_t pageProgrammAttempted = 0;
 
 //Indicates if any program code has been found in flash (first 100 bytes)
 uint8_t programExists = 0;
+
+//Indicates if the micro is being programmed over USB at a high baud rate
+uint8_t usbMode = 0;
 
 union page_address_union {
 	uint16_t word;
@@ -281,18 +285,31 @@ int main(void)
 	byteReadValid = getch(&(configUARTdata[1]));
 	if (byteReadValid == -1) app_start();
 
-	 uint8_t parityBit = configUARTdata[0] >> 7;
-	 uint16_t newBaudRate = (((uint16_t)configUARTdata[0] & 0b01111111) << 8) | (uint16_t)(configUARTdata[1]);
-	 // Calculate the baud rate for the register
-	 newBaudRate = (((((CPU_SPEED * 10) / (16L * newBaudRate)) + 5) / 10) - 1);
-	 // 12-bit register which contains the USART baud rate
-	 UBRR0H = newBaudRate >> 8;	// four most significant
-	 UBRR0L = newBaudRate;		// eight least significant bits
+	//Both received bytes equal 1 indicates USB programming
+	if (configUARTdata[0] == 1 && configUARTdata[1] == 1){
+		// Baud rate for USB
+		uint32_t newBaudRate = 38400;
+		// Calculate the baud rate for the register
+		newBaudRate = (((((CPU_SPEED * 10) / (16L * newBaudRate)) + 5) / 10) - 1);
+		// 12-bit register which contains the USART baud rate
+		UBRR0H = newBaudRate >> 8;	// four most significant
+		UBRR0L = newBaudRate;		// eight least significant bits
+	}else{
 
-	 // A parity bit is already set up for UART
-	 // if we dont want the parity but then clear
-	if (parityBit == 0)
+		uint8_t parityBit = configUARTdata[0] >> 7;
+		uint16_t newBaudRate = (((uint16_t)configUARTdata[0] & 0b01111111) << 8) | (uint16_t)(configUARTdata[1]);
+		// Calculate the baud rate for the register
+		newBaudRate = (((((CPU_SPEED * 10) / (16L * newBaudRate)) + 5) / 10) - 1);
+		// 12-bit register which contains the USART baud rate
+		UBRR0H = newBaudRate >> 8;	// four most significant
+		UBRR0L = newBaudRate;		// eight least significant bits
+
+		// A parity bit is already set up for UART
+		// if we dont want the parity but then clear
+		if (parityBit == 0)
 		UCSR0C &=  !((1<<UPM00) | (1<<UPM01));
+
+	}
 
 	// Flush any received junk data from UART
 	while(UART_RECIVE_COMPLETE){
@@ -506,9 +523,13 @@ void onboard_program_write(uint32_t page, uint8_t *buf)
 	SREG = sreg;
 
 	pageProgrammAttempted = 1;
+
+	// If using usb, request the next page
+	if (usbMode)
+		putch('N');
 }
 
-#ifdef DEBUG_UART_OUT
+
 void putch(char ch)
 {
 	// Check if the last data has been sent
@@ -516,7 +537,7 @@ void putch(char ch)
 	//Send next byte
 	UDR0 = ch;
 }
-#endif
+
 
 // Gets a char from the uart port
 // Returns 1 upon success

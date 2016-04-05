@@ -3,6 +3,7 @@ menu.IR=IR Upload Frequency
 menu.autoReset=Auto Reset
 menu.parityBit=Parity Bit
 menu.baudRate=Upload Baud Rate
+menu.USB=USB Mode
 
 GMC.name=ATMEGA328p GMC
 
@@ -17,7 +18,7 @@ GMC.build.variant=arduino:standard
 GMC.upload.tool=avrdudeIR
 GMC.upload.protocol=arduino
 GMC.upload.maximum_data_size=2048
-GMC.upload.maximum_size=28672
+GMC.upload.maximum_size=30720
 GMC.upload.speed=4800
 
 GMC.bootloader.tool=arduino:avrdude
@@ -25,7 +26,7 @@ GMC.bootloader.low_fuses=0xff
 GMC.bootloader.high_fuses=0xda
 GMC.bootloader.extended_fuses=0x05
 GMC.bootloader.file=BootloaderIR.hex
-GMC.bootloader.unlock_bits=0x2F
+GMC.bootloader.unlock_bits=0x3F
 GMC.bootloader.lock_bits=0x3F
 
 GMC.menu.IR.36=36kHz
@@ -45,6 +46,12 @@ GMC.menu.autoReset.yes.upload.autoReset=-a
 
 GMC.menu.autoReset.no=NO
 GMC.menu.autoReset.no.upload.autoReset=
+
+GMC.menu.USB.yes=YES
+GMC.menu.USB.yes.upload.usbMode=-u
+
+GMC.menu.USB.no=NO
+GMC.menu.USB.no.upload.usbMode=
 
 GMC.menu.parityBit.yes=YES
 GMC.menu.parityBit.yes.upload.parityBit=-P

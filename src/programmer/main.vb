@@ -12,6 +12,7 @@
     Dim quiteMode As Boolean = False
     Dim automaticReset As Boolean = False
     Dim useParityBit As Boolean = False
+    Dim USBMode As Boolean = False
 
 
     ' Display a list of commands to the screen
@@ -24,6 +25,7 @@
         Console.WriteLine("-i        IR Carrior Period")
         Console.WriteLine("-f        Input Hex file")
         Console.WriteLine("-a        Automatic Reset")
+        Console.WriteLine("-u        USB mode - no IR")
         Console.WriteLine("-v        Verbose - Output more info")
         Console.WriteLine("-q        Quite - Supress fancy progress bar")
         Console.WriteLine("-h        This help")
@@ -69,6 +71,9 @@
                 ElseIf args(i) = "-P" Then
                     useParityBit = True
                     i = i - 1
+                ElseIf args(i) = "-u" Then
+                    USBMode = True
+                    i = i - 1
                 Else
                     Console.ForegroundColor = ConsoleColor.Red
                     Console.WriteLine("Unknown parameter: " & args(i))
@@ -82,7 +87,6 @@
             Console.WriteLine(ex.Message)
         End Try
 
-
         Console.WriteLine("IR Programing comencing")
         Console.WriteLine()
 
@@ -93,11 +97,13 @@
             Console.WriteLine("IR Period: " & IrPeriod & "us")
             Console.WriteLine("IR Frequency: " & FormatNumber(1 / (IrPeriod * 0.001), 2) & "kHz")
             Console.WriteLine("Baud Rate: " & baudRate)
+            Console.WriteLine("Parity Bit: " & useParityBit)
+            Console.WriteLine("Automatic Reset: " & automaticReset)
+            Console.WriteLine("USB Mode: " & USBMode)
             Console.WriteLine("Qutie Mode: " & quiteMode)
             Console.WriteLine("Verbose Mode: " & verboseMode)
             Console.WriteLine()
         End If
-
         Console.Write("Reading hex file...")
         Try
             parse_file(hexPath)
@@ -115,7 +121,11 @@
             port.ReadTimeout = 3000
             port.BaudRate = 4800
             port.StopBits = 1
-            port.Parity = IO.Ports.Parity.None
+            If USBMode Then
+                port.Parity = IO.Ports.Parity.Even
+            Else
+                port.Parity = IO.Ports.Parity.None
+            End If
             port.DataBits = 8
             port.Handshake = IO.Ports.Handshake.None
             If port.IsOpen = False Then
@@ -138,48 +148,81 @@
             End
         End If
 
+        'If using usb overide baud rate
+        If USBMode Then
+            Console.WriteLine("USB progrtamming overiding baud rate to 115200")
+            baudRate = 115200
+        End If
+
         'Setup the first 3 bytes to send
         'IR carrior frequency
         'Baud rate
         'Pairty bit
 
-        Dim setupData(2) As Byte
-        setupData(0) = IrPeriod
 
-        If useParityBit Then
-            setupData(1) = Math.Floor(baudRate / 256) + 128
+
+        If USBMode Then
+
+            ' Put the micro into reset
+            port.DtrEnable = True
+
+            'Both setup bytes equal 1 indicates usb mode
+            Dim setupData(2) As Byte
+            setupData(1) = 1
+            setupData(2) = 1
+
+            ' Release the micro from reset
+            port.DtrEnable = False
+            ' Keep the micro in bootloader
+            keepMicroInBootloader()
+
+            port.DiscardOutBuffer()
+            ' Send configuate for usb mode
+            port.Write(setupData, 1, 2)
+            System.Threading.Thread.Sleep(160)
         Else
-            setupData(1) = Math.Floor(baudRate / 256)
-        End If
-        setupData(2) = baudRate Mod 256
 
-        'Try three times to connect to the program incase its stuck
-        For retryCount = 0 To 3
-            Try
-                port.Write(setupData, 0, 3) ' Send setup data
-                Console.Write("Waiting for programmer response...")
 
-                'Compaire the recived data to sent data to check a correct connection
-                Dim response As Byte = port.ReadByte()
-                Dim resposeBaudHigh As Byte = port.ReadByte()
-                Dim resposeBaudLow As Byte = port.ReadByte()
-                Dim responseParity As Byte = port.ReadByte()
-                Dim responseBaud As Integer = resposeBaudHigh * 256 + resposeBaudLow
-                If (response <> IrPeriod) Or responseBaud <> baudRate Or CBool(responseParity) <> useParityBit Then ' Check we recive back the period so the conenction is good
+            Dim setupData(2) As Byte
+            setupData(0) = IrPeriod
+
+            If useParityBit Then
+                setupData(1) = Math.Floor(baudRate / 256) + 128
+            Else
+                setupData(1) = Math.Floor(baudRate / 256)
+            End If
+            setupData(2) = baudRate Mod 256
+
+            'Try three times to connect to the program incase its stuck
+            For retryCount = 0 To 3
+                Try
+                    port.Write(setupData, 0, 3) ' Send setup data
+                    Console.Write("Waiting for programmer response...")
+
+                    'Compaire the recived data to sent data to check a correct connection
+                    Dim response As Byte = port.ReadByte()
+                    Dim resposeBaudHigh As Byte = port.ReadByte()
+                    Dim resposeBaudLow As Byte = port.ReadByte()
+                    Dim responseParity As Byte = port.ReadByte()
+                    Dim responseBaud As Integer = resposeBaudHigh * 256 + resposeBaudLow
+                    If (response <> IrPeriod) Or responseBaud <> baudRate Or CBool(responseParity) <> useParityBit Then ' Check we recive back the period so the conenction is good
+                        Console.ForegroundColor = ConsoleColor.Red
+                        Console.WriteLine("Invalid programmer response, exiting...")
+                        End
+                    End If
+                    Exit For
+                Catch ex As Exception
                     Console.ForegroundColor = ConsoleColor.Red
-                    Console.WriteLine("Invalid programmer response, exiting...")
-                    End
-                End If
-                Exit For
-            Catch ex As Exception
-                Console.ForegroundColor = ConsoleColor.Red
-                Console.WriteLine("Programmer not responding")
-                Console.WriteLine(ex.Message)
-                If retryCount = 3 Then
-                    End
-                End If
-            End Try
-        Next
+                    Console.WriteLine("Programmer not responding")
+                    Console.WriteLine(ex.Message)
+                    If retryCount = 3 Then
+                        End
+                    End If
+                End Try
+            Next
+
+        End If
+
 
         ' Change the baud rate to the specified rate for programming
         Try
@@ -195,23 +238,36 @@
         Console.WriteLine()
 
 
-        ' If automatticly resetting then dont do anything else pause with a message box
-        If automaticReset Then
-            Console.ForegroundColor = ConsoleColor.Green
-            Console.WriteLine("Hopefully automaticly reset, starting programming")
-            Console.ForegroundColor = ConsoleColor.Gray
-            System.Threading.Thread.Sleep(200)
+
+        If USBMode Then
+            port.DiscardOutBuffer()
+            keepMicroInBootloader()
+            port.DiscardOutBuffer()
+            System.Threading.Thread.Sleep(160)
         Else
-            Console.ForegroundColor = ConsoleColor.Green
-            Console.WriteLine("Reset the target and press OK to begin programing")
-            Console.ForegroundColor = ConsoleColor.Gray
-            MsgBox("Reset the target and press OK to begin programing", MsgBoxStyle.Information, "Ready to program")
+            ' If automatticly resetting then dont do anything else pause with a message box
+            If automaticReset Then
+                Console.ForegroundColor = ConsoleColor.Green
+                Console.WriteLine("Hopefully automaticly reset, starting programming")
+                Console.ForegroundColor = ConsoleColor.Gray
+                System.Threading.Thread.Sleep(200)
+            Else
+                Console.ForegroundColor = ConsoleColor.Green
+                Console.WriteLine("Reset the target and press OK to begin programing")
+                Console.ForegroundColor = ConsoleColor.Gray
+                MsgBox("Reset the target and press OK to begin programing", MsgBoxStyle.Information, "Ready to program")
+            End If
         End If
+
 
         ' Send a start byte to incidate programming
         Dim temC(1) As Byte
-        temC(0) = Asc("s")
-        port.Write(temC, 0, 1) ' Send s period for Ready
+
+        If Not USBMode Then
+            temC(0) = Asc("s")
+            port.Write(temC, 0, 1) ' Send s period for Ready
+        End If
+
 
         Dim Memory_Address_High As Integer
         Dim Memory_Address_Low As Integer
@@ -305,6 +361,17 @@
             Next
             '=============================================
 
+            ' When using usb mode wait at the end of the page for the micro to request the next
+            If USBMode Then
+                Try
+                    port.ReadByte()
+                Catch ex As Exception
+                    Console.ForegroundColor = ConsoleColor.Red
+                    Console.WriteLine("Micro never requested next page, programming failed")
+                    End
+                End Try
+            End If
+
             current_memory_address = current_memory_address + page_size
         Loop
 
@@ -338,11 +405,20 @@
 
     End Sub
 
+    Sub keepMicroInBootloader()
+        Dim temC(1) As Byte
+        For x = 0 To 100
+            temC(0) = &HAA
+            port.Write(temC, 0, 1)
+        Next
+    End Sub
+
     Dim bytesSent As Integer = 0
 
     'Sends byte to thew com port but pauses after 100 bytes until the programmer requests more data
     Sub SendByteLimit(ByVal b As Byte)
-        If bytesSent > 100 Then
+        ' No send limit on USB mode
+        If Not USBMode And bytesSent > 100 Then
             Try
                 Dim response As Byte = port.ReadByte()
             Catch ex As Exception
