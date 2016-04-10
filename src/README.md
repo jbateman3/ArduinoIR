@@ -10,6 +10,9 @@ Forwards data received from the computer over IR, data is sent from the computer
 
 
 # Bootloader
+The bootloader loads the program over IR using digial pin 0 or over serial using digital pins 1 (TX) and 3 (RX).
+
+For serial programming the bootloader uses the arduino optiboot bootaloder. 
 
 The bootloader for the arduino, Receives serial over IR. Tries to boot the application code on any sign of trouble as to avoid being stuck in the booloader. Communication defaults to 4800 baud, but is re-negotiated  after connection. Data is sent with check sums to identify any errors.
 

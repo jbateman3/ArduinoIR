@@ -1,8 +1,12 @@
 # ArduinoIR
 
-IR bootloader for an arduino atmega328p. Allows wireless uploading of sketches to the arduino. 
+IR bootloader for an arduino atmega328p. Allows wireless and wired uploading of sketches to the arduino. 
 
-Sketches upload reliably at 4800 baud, however higher baud rates are available. Always keep the transmitter and receiver in close range and line of site.
+##Warning## For wired (serial) programming digital pins 1 (TX) and 3 (RX) are used. This is due to the IR reviver using pin 0.
+
+Sketches upload reliably at 4800 baud (IR Programming), however higher baud rates are available. Always keep the transmitter and receiver in close range and line of site.
+
+Sketches upload at 57600 baud for serial programming using the arduino optiboot blootloader
 
 ## Ingredients
 

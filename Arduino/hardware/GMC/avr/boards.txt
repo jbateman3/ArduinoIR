@@ -1,8 +1,15 @@
-
+###########################################
+## ------------  Menu Titles --------------
+###########################################
 menu.IR=IR Upload Frequency
 menu.autoReset=Auto Reset
 menu.parityBit=Parity Bit
 menu.baudRate=Upload Baud Rate
+menu.USB=USB Mode
+
+###########################################
+## -----------  Main Settings -------------
+###########################################
 
 GMC.name=ATMEGA328p GMC
 
@@ -13,20 +20,21 @@ GMC.build.board=AVR_DUEMILANOVE
 GMC.build.core=arduino:arduino
 GMC.build.variant=arduino:standard
 
-
-GMC.upload.tool=avrdudeIR
 GMC.upload.protocol=arduino
 GMC.upload.maximum_data_size=2048
-GMC.upload.maximum_size=28672
-GMC.upload.speed=4800
+GMC.upload.maximum_size=30720
 
 GMC.bootloader.tool=arduino:avrdude
 GMC.bootloader.low_fuses=0xff
 GMC.bootloader.high_fuses=0xda
 GMC.bootloader.extended_fuses=0x05
 GMC.bootloader.file=BootloaderIR.hex
-GMC.bootloader.unlock_bits=0x2F
+GMC.bootloader.unlock_bits=0x3F
 GMC.bootloader.lock_bits=0x3F
+
+###########################################
+## --------------  Menu IR ----------------
+###########################################
 
 GMC.menu.IR.36=36kHz
 GMC.menu.IR.36.upload.IRPeriod=28
@@ -40,17 +48,44 @@ GMC.menu.IR.40.upload.IRPeriod=25
 GMC.menu.IR.56=56kHz
 GMC.menu.IR.56.upload.IRPeriod=18
 
+###########################################
+## ----------  Menu AutoReset ------------
+###########################################
+
 GMC.menu.autoReset.yes=YES
 GMC.menu.autoReset.yes.upload.autoReset=-a
 
 GMC.menu.autoReset.no=NO
 GMC.menu.autoReset.no.upload.autoReset=
 
+###########################################
+## ---------  Menu USB Upload -------------
+###########################################
+
+GMC.upload.tool=avrdudeIR
+GMC.upload.speed=4800
+
+GMC.menu.USB.yes=YES
+GMC.menu.USB.yes.upload.tool=avrdude
+GMC.menu.USB.yes.upload.speed=57600
+
+GMC.menu.USB.no=NO
+GMC.menu.USB.no.upload.tool=avrdudeIR
+GMC.menu.USB.no.upload.speed=4800
+
+###########################################
+## ---------  Menu Parity Bit -------------
+###########################################
+
 GMC.menu.parityBit.yes=YES
 GMC.menu.parityBit.yes.upload.parityBit=-P
 
 GMC.menu.parityBit.no=NO
 GMC.menu.parityBit.no.upload.parityBit=
+
+###########################################
+## ----------  Menu Baud Rate -------------
+###########################################
 
 GMC.menu.baudRate.4807=4807
 GMC.menu.baudRate.4807.upload.baudRate=4807
