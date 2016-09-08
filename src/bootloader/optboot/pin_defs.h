@@ -11,7 +11,7 @@
 #define UART_PIN    PIND
 #define UART_DDR    DDRD
 #define UART_TX_BIT 1
-#define UART_RX_BIT 3
+#define UART_RX_BIT 0
 #endif
 #endif
 

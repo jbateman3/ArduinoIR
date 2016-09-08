@@ -15,6 +15,21 @@
 #define BAUD   4800
 #define MYUBRR (((((CPU_SPEED * 10) / (16L * BAUD)) + 5) / 10) - 1)
 
+// Use a Software UART for IR - allows any pin
+#define IR_SOFT_UART
+#define IR_UART_PORT   PORTB
+#define IR_UART_PIN    PINB
+#define IR_UART_DDR    DDRB
+#define IR_UART_TX_BIT 5
+#define IR_UART_RX_BIT 3
+//#define IR_UART_PORT   PORTD
+//#define IR_UART_PIN    PIND
+//#define IR_UART_DDR    DDRD
+//#define IR_UART_TX_BIT 3
+//#define IR_UART_RX_BIT 2
+
+
+
 //Here we calculate the wait period inside getch().
 #define CPU_SPEED F_CPU
 #define MAX_CHARACTER_WAIT	15 // allow bytes to be delayed by 15 periods
@@ -106,6 +121,17 @@ void ir_app_start();
 
 // Resets the micro after 15ms
 void softRst();
+
+// Waits for a long high time on the serial line to indicate
+// a gap between bytes
+// Return true if sync to received byte
+int sycSerial();
+
+void ir_uartDelay();
+
+void watchdogReset();
+void watchdogEnable125();
+void watchdogDisable();
 
 
 

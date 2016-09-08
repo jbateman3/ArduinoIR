@@ -10,7 +10,8 @@ tools.avrdudeIR.cmd.path={path}/tools/AvrdudeIR
 
 tools.avrdudeIR.upload.params.verbose=-v
 tools.avrdudeIR.upload.params.quiet=-q
-tools.avrdudeIR.upload.pattern="{cmd.path}" -q {upload.params.verbose} {upload.usbMode} {upload.autoReset} {upload.parityBit} -p {serial.port} -b {upload.baudRate} -i {upload.IRPeriod} -f "{build.path}/{build.project_name}.hex"
+#tools.avrdudeIR.upload.pattern="{cmd.path}" -q {upload.params.verbose} {upload.usbMode} {upload.autoReset} {upload.parityBit} -p {serial.port} -b {upload.baudRate} -i {upload.IRPeriod} -f "{build.path}/{build.project_name}.hex"
+tools.avrdudeIR.upload.pattern="{cmd.path}" -q {upload.params.verbose} {upload.usbMode} {upload.autoReset} -P -p {serial.port} -b 4800 -i {upload.IRPeriod} -f "{build.path}/{build.project_name}.hex"
 
 
 ###########################################

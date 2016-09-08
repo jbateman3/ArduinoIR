@@ -2,9 +2,9 @@
 
 IR bootloader for an arduino atmega328p. Allows wireless and wired uploading of sketches to the arduino. 
 
-##Warning## For wired (serial) programming digital pins 1 (TX) and 3 (RX) are used. This is due to the IR reviver using pin 0.
+Digital pin 11 (PORT B3) is used for the IR Receiver
 
-Sketches upload reliably at 4800 baud (IR Programming), however higher baud rates are available. Always keep the transmitter and receiver in close range and line of site.
+Sketches upload reliably at 4800 baud (IR Programming). Always keep the transmitter and receiver in close range and line of site.
 
 Sketches upload at 57600 baud for serial programming using the arduino optiboot blootloader
 
@@ -39,4 +39,11 @@ Since your computer does not have an IR emitter a second arduino is required to 
 ## Target Arduino
 The Arduino that is going to be programmed needs an IR receiver connected to digital pin 0:
 
-![Arduino IR Circuit Programmer Circuit Diagram](http://i.imgur.com/BniNLIL.png)
+![Arduino IR Circuit Programmer Circuit Diagram](http://i.imgur.com/feCtoD6.png)
+
+## Tip
+If you have issues uploading over IR, try turning of "auto reset" and reset the arduino when prompted. 
+
+## TODO
+- Flash LED for programming status?
+- Make programmer auto-reboot compatible with GMC

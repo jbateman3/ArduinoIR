@@ -42,6 +42,7 @@ void loop() {
 // Wait for data from the host to start programming
 if (Serial.available() > 0){
   //First 3 byte from the host is the period for the IR carrior, buad rate and pairt bit settings
+  //When the target is using software serial the baud rate is fixed to 4800
   uint8_t setupData[3];
   Serial.readBytesUntil(0,setupData,3);
   unsigned char timerPeriod = setupData[0];
@@ -73,23 +74,29 @@ if (Serial.available() > 0){
   delay(2);  
   
     //Make sure at least 5 0xaa have been sent before uploading settings
-    for(int x = 0; x < 6; x++)
+    for(int x = 0; x < 10; x++){
       mySerialIR.write(0xaa);
-      
+      delay(2);
+    }
+
+    //When using software serial on the target the baud rate is fixed
+    ///////////////
     //Send configuration data to the device to configure UART
-    mySerialIR.write(':');
-    mySerialIR.write(setupData[1]);
-    mySerialIR.write(setupData[2]);
+    //mySerialIR.write(':');
+    //mySerialIR.write(setupData[1]);
+    //mySerialIR.write(setupData[2]);
 
     // Reconfigure SoftwareSerialIR to new settings
-    mySerialIR.end();
-     mySerialIR.begin(baudRate, timerPeriod,parityBit);
-    
-  delay(2);
+    //mySerialIR.end();
+    //mySerialIR.begin(baudRate, timerPeriod,parityBit);
 
-  //Make sure at least 5 0xaa have been sent before uploading code
-  for(int x = 0; x < 6; x++)
-      mySerialIR.write(0xaa);
+    //delay(2);
+
+    //Make sure at least 5 0xaa have been sent before uploading code
+    //for(int x = 0; x < 6; x++)
+    //  mySerialIR.write(0xaa);
+    ///////////////
+   
 
      //Wait for the target to be reset and the host to send the start singnal
   while(Serial.available() == 0){
