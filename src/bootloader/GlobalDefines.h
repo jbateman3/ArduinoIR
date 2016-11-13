@@ -19,9 +19,9 @@
 
 // Baud rate optiboot uses for programming
 // Using fastest working software serial baud rate
-//#define BAUD_RATE 115200 
+#define BAUD_RATE 115200 
 //#define BAUD_RATE 38400 
-#define BAUD_RATE 57600 
+//#define BAUD_RATE 57600 
 
 
 #endif /* GLOBALDEFINES_H_ */

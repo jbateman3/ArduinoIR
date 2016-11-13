@@ -119,7 +119,7 @@ GMC.upload.speed=4800
 
 GMC.menu.USB.yes=YES
 GMC.menu.USB.yes.upload.tool=avrdude
-GMC.menu.USB.yes.upload.speed=57600
+GMC.menu.USB.yes.upload.speed=115200
 
 GMC.menu.USB.no=NO
 GMC.menu.USB.no.upload.tool=avrdudeIR
@@ -132,7 +132,7 @@ GMCp.upload.speed=4800
    
 GMCp.menu.USB.yes=YES
 GMCp.menu.USB.yes.upload.tool=avrdude
-GMCp.menu.USB.yes.upload.speed=57600
+GMCp.menu.USB.yes.upload.speed=115200
    
 GMCp.menu.USB.no=NO
 GMCp.menu.USB.no.upload.tool=avrdudeIR
