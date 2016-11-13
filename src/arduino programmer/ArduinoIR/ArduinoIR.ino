@@ -157,7 +157,7 @@ if (Serial.available() > 0){
      // Send 'N' to request the next 100 bytes
      if (bufferRequestDataIndex == bufferReadIndex){
         Serial.write(0x4E);
-        bufferRequestDataIndex = bufferReadIndex + 100;
+        bufferRequestDataIndex = bufferReadIndex + 101;
         if (bufferRequestDataIndex >= 120)
           bufferRequestDataIndex -= 120;
      }      

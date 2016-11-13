@@ -11,10 +11,11 @@ menu.USB=USB Mode
 ## -----------  Main Settings -------------
 ###########################################
 
-GMC.name=ATMEGA328p GMC
+## ---- atmega328 ---- ##
 
+GMC.name=ATMEGA328 GMC
 
-GMC.build.mcu=atmega328p
+GMC.build.mcu=atmega328
 GMC.build.f_cpu=16000000L
 GMC.build.board=AVR_DUEMILANOVE
 GMC.build.core=arduino:arduino
@@ -28,13 +29,38 @@ GMC.bootloader.tool=arduino:avrdude
 GMC.bootloader.low_fuses=0xff
 GMC.bootloader.high_fuses=0xda
 GMC.bootloader.extended_fuses=0x05
-GMC.bootloader.file=BootloaderIR.hex
+GMC.bootloader.file=BootloaderIR328.hex
 GMC.bootloader.unlock_bits=0x3F
 GMC.bootloader.lock_bits=0x3F
+
+
+## ---- atmega328p ---- ##
+
+GMCp.name=ATMEGA328p GMC
+   
+GMCp.build.mcu=atmega328p
+GMCp.build.f_cpu=16000000L
+GMCp.build.board=AVR_DUEMILANOVE
+GMCp.build.core=arduino:arduino
+GMCp.build.variant=arduino:standard
+   
+GMCp.upload.protocol=arduino
+GMCp.upload.maximum_data_size=2048
+GMCp.upload.maximum_size=30720
+   
+GMCp.bootloader.tool=arduino:avrdude
+GMCp.bootloader.low_fuses=0xff
+GMCp.bootloader.high_fuses=0xda
+GMCp.bootloader.extended_fuses=0x05
+GMCp.bootloader.file=BootloaderIR328p.hex
+GMCp.bootloader.unlock_bits=0x3F
+GMCp.bootloader.lock_bits=0x3F
 
 ###########################################
 ## --------------  Menu IR ----------------
 ###########################################
+
+## ---- atmega328 ---- ##
 
 GMC.menu.IR.36=36kHz
 GMC.menu.IR.36.upload.IRPeriod=28
@@ -48,9 +74,25 @@ GMC.menu.IR.40.upload.IRPeriod=25
 GMC.menu.IR.56=56kHz
 GMC.menu.IR.56.upload.IRPeriod=18
 
+## ---- atmega328p ---- ##
+
+GMCp.menu.IR.36=36kHz
+GMCp.menu.IR.36.upload.IRPeriod=28
+   
+GMCp.menu.IR.38=38kHz
+GMCp.menu.IR.38.upload.IRPeriod=26
+   
+GMCp.menu.IR.40=40kHz
+GMCp.menu.IR.40.upload.IRPeriod=25
+   
+GMCp.menu.IR.56=56kHz
+GMCp.menu.IR.56.upload.IRPeriod=18
+
 ###########################################
 ## ----------  Menu AutoReset ------------
 ###########################################
+
+## ---- atmega328 ---- ##
 
 GMC.menu.autoReset.yes=YES
 GMC.menu.autoReset.yes.upload.autoReset=-a
@@ -58,9 +100,19 @@ GMC.menu.autoReset.yes.upload.autoReset=-a
 GMC.menu.autoReset.no=NO
 GMC.menu.autoReset.no.upload.autoReset=
 
+## ---- atmega328p ---- ##
+
+GMCp.menu.autoReset.yes=YES
+GMCp.menu.autoReset.yes.upload.autoReset=-a
+
+GMCp.menu.autoReset.no=NO
+GMCp.menu.autoReset.no.upload.autoReset=
+
 ###########################################
 ## ---------  Menu USB Upload -------------
 ###########################################
+
+## ---- atmega328 ---- ##
 
 GMC.upload.tool=avrdudeIR
 GMC.upload.speed=4800
@@ -72,6 +124,19 @@ GMC.menu.USB.yes.upload.speed=57600
 GMC.menu.USB.no=NO
 GMC.menu.USB.no.upload.tool=avrdudeIR
 GMC.menu.USB.no.upload.speed=4800
+
+## ---- atmega328 ---- ##
+
+GMCp.upload.tool=avrdudeIR
+GMCp.upload.speed=4800
+   
+GMCp.menu.USB.yes=YES
+GMCp.menu.USB.yes.upload.tool=avrdude
+GMCp.menu.USB.yes.upload.speed=57600
+   
+GMCp.menu.USB.no=NO
+GMCp.menu.USB.no.upload.tool=avrdudeIR
+GMCp.menu.USB.no.upload.speed=4800
 
 ############################################
 ### ---------  Menu Parity Bit -------------

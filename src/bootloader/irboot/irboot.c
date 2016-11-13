@@ -122,9 +122,9 @@ __attribute__((OS_task)) int main_irboot(void)
 
 
 
-	DDRB |=  0b00110000;
-	PORTB &= 0b00010000;
-	PORTB |= 0b00100000;
+	DDRB =  0b00110000;
+	PORTB = 0b00100000;
+	//PORTB |= 0b00100000;
 
 
 #ifdef DEBUG_IO
@@ -228,6 +228,8 @@ SkipFirstChar:
 
 			//booting app disable watchdog
 			watchdogDisable();
+				DDRB |=  0b00000000;
+				PORTB = 0b00000000;
 			ir_flash_app_start();
 		}
 
@@ -317,6 +319,8 @@ void ir_app_start(){
 #endif
 	//booting app disable watchdog
 	watchdogDisable();
+			DDRB |=  0b00000000;
+			PORTB = 0b00000000;
 	// only run the program if program code has been found in the flash
 	// else stay in the bootloader so programming can happen
 	if (programExists == 1)

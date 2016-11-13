@@ -20,7 +20,7 @@ tools.avrdudeIR.upload.pattern="{cmd.path}" -q {upload.params.verbose} {upload.u
 
 tools.avrdude.path={runtime.tools.avrdude.path}
 tools.avrdude.cmd.path={path}/bin/avrdude
-tools.avrdude.config.path={path}/etc/avrdude.conf
+tools.avrdude.config.path={runtime.hardware.path}/tools/avrdude.conf
 
 tools.avrdude.upload.params.verbose=-v
 tools.avrdude.upload.params.quiet=-q -q
